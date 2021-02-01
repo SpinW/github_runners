@@ -1,5 +1,0 @@
-Setup list:
- - Setup vagrant and virtualbox
- - Change `GITHUB_PAT` token in `bootstrap_vars.sh`. Note that this requires repo scope for private repos and public_repo scope for public repos.
- - Run via `vagrant up`
- - Take down by `vagrant destroy`
