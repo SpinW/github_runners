@@ -42,7 +42,7 @@ echo 'sudo -u github /home/github/config.sh remove --unattended --token ${RUNNER
 chmod +x /home/github/teardown.sh
 
 su github -c "./config.sh \
-    --name $(hostname) \
+    --name $( cat /dev/urandom | tr -cd 'a-f0-9' | head -c 16 ) \
     --token ${RUNNER_TOKEN} \
     --url https://github.com/${GITHUB_OWNER}/${GITHUB_REPOSITORY} \
     --work ${RUNNER_WORKDIR} \
