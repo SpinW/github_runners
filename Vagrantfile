@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
          vb.customize ["modifyvm", :id, "--macaddress1", "5CA1AB1E0001" ]
        end
 
-       linux.vm.provision :shell, inline: "echo 'source /vagrant/bootstrap_vars.sh' > /etc/profile.d/gh-environment.sh", :run => 'always'
+       linux.vm.provision :shell, inline: "echo 'source /vagrant/bootstrap_vars.sh' > /root/.bashrc", :run => 'always'
 
        linux.vm.provision :shell do |s|
            s.path = 'bootstrap_linux.sh'
@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
 
        linux.trigger.before :destroy do |trigger|
            trigger.info = "Remove the github runner"
-           trigger.run_remote = {inline: "/home/github/teardown.sh"}
+           trigger.run_remote = {inline: "/root/teardown.sh"}
        end
    end
 #    config.vm.define "macos" do |macos|
