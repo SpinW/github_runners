@@ -17,11 +17,13 @@ def index():
                 elif req_data['ghcontrol'] == 'destroy':
                     print(f'Destroying server: {req_data["server"]}')
                     subprocess.run(['vagrant', 'destroy', req_data["server"], '-f'])
+                return '{"success":"true"}'
             else:
                 print('No "server" data. I am not doing anything')
         else:
             print('No "ghcontrol" data. I am not doing anything')
-        return '{"success":"true"}'
+        return '{"success":"false"}'
+
 
 
 if __name__ == "__main__":   

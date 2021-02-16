@@ -46,6 +46,7 @@ su github -c "./config.sh \
     --token ${RUNNER_TOKEN} \
     --url https://github.com/${GITHUB_OWNER}/${GITHUB_REPOSITORY} \
     --work ${RUNNER_WORKDIR} \
+    --labels linux_matlab
     --unattended \
     --replace"
 
