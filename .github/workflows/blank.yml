@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: HookTest
 
 # Controls when the action will run. 
 on:
@@ -24,11 +24,20 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: Invoke deployment hook
+      - name: Invoke creation hook
         uses: distributhor/workflow-webhook@v1
         env:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
-          data: '{ "weapon": "hammer", "drink" : "beer" }'
+          data: '{ "ghcontrol": "create", "server" : "linux" }'
+      - name: Pausing for a bit
+        run: |
+          sleep 300
+      - name: Invoke destroying hook
+        uses: distributhor/workflow-webhook@v1
+        env:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+          webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
+          data: '{ "ghcontrol": "destroy", "server" : "linux" }'
