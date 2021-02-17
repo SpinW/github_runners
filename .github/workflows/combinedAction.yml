@@ -15,7 +15,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  # This workflow creates a VM labeled `matlab_linux`
   create_runner:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -33,13 +33,8 @@ jobs:
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
           data: '{ "ghcontrol": "create", "server" : "linux" }'
-      # Starts the job on the local runner
-      - name: Invoke workflow with inputs
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: localRun
-          token: ${{ secrets.PERSONAL_TOKEN }}
-          inputs: '{ "test": "custom"}'
+  
+  # This workflow runs the actual unit tests if we have suceeded creating the VM
   unit_tests:
     needs: create_runner
     # The type of runner that the job will run on
@@ -54,11 +49,12 @@ jobs:
       - name: Run a one-line script
         run: |
           echo Hello, world!
-          echo "Tests: ${{ github.event.inputs.test }}"
       # Runs a set of commands using the MATLAB shell
       - name: Run a multi-line script
         run: |
           matlab -nosplash -nodesktop -nojvm -r "disp('Hello World'); exit"
+          
+  # This workflow always runs after the creating and unit tests, destroying the VM
   destroy_runner:
     needs: [create_runner, unit_tests]
     if: always()
