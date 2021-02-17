@@ -39,7 +39,7 @@ def index():
                     if not PAT:
                         return '{"success":"false", "info":"PAT not supplied"}'
                     print(f'Bringing up server: {req_data["server"]}')
-                    write_vars(owner, repo, req_data['PAT'], defaults[req_data["server"]])
+                    write_vars(owner, repo, PAT, defaults[req_data["server"]])
                     try:
                         subprocess.run(['vagrant', 'up', req_data["server"]])
                     finally:
@@ -55,6 +55,7 @@ def index():
             info = 'ghcontrol data was not supplied'
             print(info + '. I am not doing anything')
         return '{"success":"false", "info":"' + info + '"}'
+
 
 if __name__ == "__main__":   
     app.run(host='127.0.0.1', port=4000, threaded=True, debug=True) # will listen on port 4000
