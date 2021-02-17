@@ -26,7 +26,7 @@ jobs:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
-          data: '{ "ghcontrol": "create", "server" : "linux", "PAT" :  ${{ secrets.WEBHOOK_AUTH }} }'
+          data: '{ "ghcontrol": "create", "server" : "linux", "PAT" : "${{ secrets.WEBHOOK_AUTH }}" }'
   
   # This workflow runs the actual unit tests if we have suceeded creating the VM
   unit_tests:
