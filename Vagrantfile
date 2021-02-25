@@ -8,9 +8,7 @@ Vagrant.configure("2") do |config|
 
        linux.vm.provision :shell, inline: "cat /vagrant/bootstrap_vars.sh > /root/.bashrc", :run => 'always'
 
-       linux.vm.provision :shell do |s|
-           s.path = 'bootstrap_linux.sh'
-       end
+       linux.vm.provision :shell, path: 'bootstrap_linux.sh'
 
        linux.trigger.before :destroy do |trigger|
            trigger.info = "Remove the github runner"
