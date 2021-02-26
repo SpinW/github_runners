@@ -1,15 +1,13 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Combined_CI
+name: Combined_CI_V2
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
-  #push:
-  #  branches: [ master ]
-  #pull_request:
-  #  branches: [ master ]
-
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -24,7 +22,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2
       # Creates the new VM
       - name: Invoke creation hook
         uses: distributhor/workflow-webhook@v1
@@ -32,7 +30,7 @@ jobs:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
-          data: '{ "ghcontrol": "create", "server" : "linux" }'
+          data: '{ "ghcontrol": "create", "server" : "linux", "PAT" : "${{ secrets.PERSONAL_TOKEN }}" }'
   
   # This workflow runs the actual unit tests if we have suceeded creating the VM
   unit_tests:
@@ -64,7 +62,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2
       # Destroy the VM
       - name: Invoke destroying hook
         uses: distributhor/workflow-webhook@v1
