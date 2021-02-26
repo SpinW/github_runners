@@ -2,3 +2,5 @@
 
 .idea/
 .vagrant/
+boxes/
+modify_boxes/
