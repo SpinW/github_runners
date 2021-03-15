@@ -24,13 +24,17 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       # - uses: actions/checkout@v2
       # Creates the new VM
+      - name: Install OpenSSL
+        run: |
+          sudo sudo apt-get install openssl
       - name: Invoke creation hook
         uses: distributhor/workflow-webhook@v1
         env:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.WEBHOOK_AUTH }}
-          data: '{ "ghcontrol": "create", "server" : "linux", "PAT" : "${{ secrets.PERSONAL_TOKEN }}" }'
+          # decrypted on server with `openssl enc -aes-256-cbc -d -a -pbkdf2 -k $OPENSSL_PW`
+          data: '{ "ghcontrol": "create", "server" : "linux", "PAT" : "$( echo $PERSONAL_TOKEN | openssl enc -e -aes-256-cbc -pbkdf2 -a -k $OPENSSL_PW )" }'
   
   # This workflow runs the actual unit tests if we have suceeded creating the VM
   unit_tests:
