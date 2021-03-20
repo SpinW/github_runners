@@ -20,7 +20,12 @@ echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 cd /home/github/ || exit
 mkdir work
 
-source /vagrant/bootstrap_vars.sh
+# Reads required environment variables from bootstrap_vars file
+for ff in $(cat /vagrant/bootstrap_vars) 
+do 
+   IFS="=" read -ra varr <<< "$ff"
+   export ${varr[0]}=${varr[1]}
+done
 
 curl -Ls https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz | tar xz \
     && sudo ./bin/installdependencies.sh
@@ -33,11 +38,10 @@ payload=$(curl -sX POST -H "Authorization: token ${GITHUB_PAT}" ${registration_u
 export RUNNER_TOKEN=$(echo $payload | jq .token --raw-output)
 
 echo '#!/usr/bin/env bash' > /root/teardown.sh
-echo 'source /vagrant/bootstrap_vars.sh' >> /root/teardown.sh
 echo "cd /home/github" >> /root/teardown.sh
 echo "./svc.sh uninstall" >> /root/teardown.sh
 echo 'removal_url="https://api.github.com/repos/'${GITHUB_OWNER}'/'${GITHUB_REPOSITORY}'/actions/runners/remove-token"' >> /root/teardown.sh
-echo 'payload=$(curl -sX POST -H "Authorization: token ${GITHUB_PAT}" ${removal_url})' >> /root/teardown.sh
+echo 'payload=$(curl -sX POST -H "Authorization: token '${GITHUB_PAT}'" ${removal_url})' >> /root/teardown.sh
 echo 'export RUNNER_TOKEN=$(echo $payload | jq .token --raw-output)' >> /root/teardown.sh
 echo 'sudo -u github /home/github/config.sh remove --unattended --token ${RUNNER_TOKEN}' >> /root/teardown.sh
 chmod 700 /root/teardown.sh

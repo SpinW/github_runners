@@ -1,7 +1,11 @@
 #!/usr/bin/env zsh
 
-source ~/.zshrc
-#cat ~.zshrc >> /Users/vagrant/.zshrc
+# Reads required environment variables from bootstrap_vars file
+for ff in $(cat /vagrant/bootstrap_vars) 
+do 
+   IFS="=" read -ra varr <<< "$ff"
+   export ${varr[0]}=${varr[1]}
+done
 
 echo $(pwd)
 
@@ -19,10 +23,9 @@ payload=$(curl -sX POST -H "Authorization: token ${GITHUB_PAT}" ${registration_u
 export RUNNER_TOKEN=$(echo $payload | jq .token --raw-output)
 
 echo '#!/usr/bin/env zsh' > /Users/vagrant/teardown.sh
-echo 'source /var/root/.zshrc' >> /Users/vagrant/teardown.sh
 echo 'rm /Users/github/.service' >> /Users/vagrant/teardown.sh
 echo 'removal_url="https://api.github.com/repos/'${GITHUB_OWNER}'/'${GITHUB_REPOSITORY}'/actions/runners/remove-token"' >> /Users/vagrant/teardown.sh
-echo 'payload=$(curl -sX POST -H "Authorization: token ${GITHUB_PAT}" ${removal_url})' >> /Users/vagrant/teardown.sh
+echo 'payload=$(curl -sX POST -H "Authorization: token '${GITHUB_PAT}'" ${removal_url})' >> /Users/vagrant/teardown.sh
 echo 'export RUNNER_TOKEN=$(echo $payload | jq .token --raw-output)' >> /Users/vagrant/teardown.sh
 echo 'sudo -u github /Users/github/config.sh remove --unattended --token ${RUNNER_TOKEN}' >> /Users/vagrant/teardown.sh
 chmod 700 /Users/vagrant/teardown.sh
