@@ -1,6 +1,7 @@
-# Change to work folder and clears it
+# Create the work folder and change to it
+#mkdir c:/github
 cd c:/github
-Get-ChildItem -Recurse | ?{Remove-Item $_.fullname -Recurse -Force}
+#Get-ChildItem -Recurse | ?{Remove-Item $_.fullname -Recurse -Force}
 
 # Reads variables from a file
 Get-Content c:/vagrant/bootstrap_vars | Foreach-Object{
@@ -9,9 +10,9 @@ Get-Content c:/vagrant/bootstrap_vars | Foreach-Object{
 }
 
 # Gets the github runner
-$runnerzip = "https://github.com/actions/runner/releases/download/v$GITHUB_RUNNER_VERSION/actions-runner-win-x64-$GITHUB_RUNNER_VERSION.zip"
-Invoke-WebRequest -Uri $runnerzip -OutFile ghrunner.zip
-Expand-Archive ghrunner.zip -DestinationPath .
+#$runnerzip = "https://github.com/actions/runner/releases/download/v$GITHUB_RUNNER_VERSION/actions-runner-win-x64-$GITHUB_RUNNER_VERSION.zip"
+#Invoke-WebRequest -Uri $runnerzip -OutFile ghrunner.zip
+#Expand-Archive ghrunner.zip -DestinationPath .
 
 # Gets the registration token
 $registration_url = "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPOSITORY/actions/runners/registration-token"

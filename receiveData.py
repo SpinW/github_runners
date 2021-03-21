@@ -46,7 +46,7 @@ def index():
                     if not PAT:
                         return '{"success":"false", "info":"PAT not supplied"}'
                     print(f'Bringing up server: {req_data["server"]}')
-                    write_vars(owner, repo, PAT, defaults[server])
+                    #write_vars(owner, repo, PAT, defaults[server])
                     try:
                         subprocess.run(['vagrant', 'up', server])
                     finally:
