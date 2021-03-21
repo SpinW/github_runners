@@ -21,6 +21,15 @@ defaults = {
 }
 
 
+def ssl_decode(value):
+    with open('ssl_pw.txt', 'r') as f:
+        ssl_pw = f.read().strip()
+    value = value.replace('_', '\n').encode()
+    ssl = subprocess.run(['openssl', 'enc', '-aes-256-cbc', '-d', '-a', '-pbkdf2', '-k', ssl_pw],
+        input=value, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    return ssl.stdout.decode()
+
+
 def write_vars(owner, repo, PAT, defaults):
     filename = defaults['filename']
     with open(filename, 'w') as fid:
@@ -42,7 +51,7 @@ def index():
             if req_data.get('server', False):
                 server = req_data["server"].split('-')[0]
                 if req_data['ghcontrol'] == 'create':
-                    PAT = req_data.get('PAT', False)
+                    PAT = ssl_decode(req_data.get('PAT', False))
                     if not PAT:
                         return '{"success":"false", "info":"PAT not supplied"}'
                     print(f'Bringing up server: {req_data["server"]}')
@@ -50,7 +59,8 @@ def index():
                     try:
                         subprocess.run(['vagrant', 'up', server])
                     finally:
-                        os.remove(defaults[server]['filename'])
+                        pass
+                    #    os.remove(defaults[server]['filename'])
                 elif req_data['ghcontrol'] == 'destroy':
                     print(f'Destroying server: {req_data["server"]}')
                     subprocess.run(['vagrant', 'destroy', server, '-f'])

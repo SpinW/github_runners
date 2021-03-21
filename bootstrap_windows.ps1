@@ -33,6 +33,6 @@ echo './config.cmd remove --unattended --token ${RUNNER_TOKEN}' >> teardown.ps1
 # Register runner and run it
 $gh_repo = "https://github.com/$GITHUB_OWNER/$GITHUB_REPOSITORY"
 $name = (1..16 | %{ '{0:X}' -f (Get-Random -Max 16)}) -join ''
-./config.cmd --token $RUNNER_TOKEN --url $gh_repo --name $name --labels windows_matlab --unattended --replace
-./run.cmd
-
+./config.cmd --token $RUNNER_TOKEN --url $gh_repo --name $name --labels windows_matlab --unattended --replace --runasservice
+# Unlike in Linux, runner doesn't exit when it starts, so run it as a service in the config step, otherwise hangs
+#cmd.exe /c run.cmd
