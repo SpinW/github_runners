@@ -9,14 +9,20 @@ defaults = {
     'linux': {
         'gh_action_work_dir': '/home/github/work',
         'runner_version': '2.276.0',
-        'filename': 'bootstrap_vars.sh',
+        'filename': 'bootstrap_vars_linux.sh',
         'export_cmd': 'export'
+    },
+    'windows': {
+        'gh_action_work_dir': 'c:/github/',
+        'runner_version': '2.276.0',
+        'filename': 'bootstrap_vars_windows',
+        'export_cmd': ''
     },
     'macos': {
         'gh_action_work_dir': '/Users/github/work',
         'runner_version':     '2.276.0',
-        'filename':           'bootstrap_vars.sh',
-        'export_cmd':         'export'
+        'filename':           'bootstrap_vars_macos.sh',
+        'export_cmd': 'export'
     }
 }
 
@@ -55,7 +61,7 @@ def index():
                     if not PAT:
                         return '{"success":"false", "info":"PAT not supplied"}'
                     print(f'Bringing up server: {req_data["server"]}')
-                    #write_vars(owner, repo, PAT, defaults[server])
+                    write_vars(owner, repo, PAT, defaults[server])
                     try:
                         subprocess.run(['vagrant', 'up', server])
                     finally:

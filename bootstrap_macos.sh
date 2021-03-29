@@ -1,11 +1,7 @@
 #!/usr/bin/env zsh
 
 # Reads required environment variables from bootstrap_vars file
-for ff in $(cat /vagrant/bootstrap_vars) 
-do 
-   IFS="=" read -ra varr <<< "$ff"
-   export ${varr[0]}=${varr[1]}
-done
+source /vagrant/bootstrap_vars_macos.sh
 
 echo $(pwd)
 

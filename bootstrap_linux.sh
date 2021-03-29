@@ -2,6 +2,8 @@
 
 export DEBIAN_FRONTEND=noninteractive
 
+sudo kill -9 $(sudo lsof /var/lib/dpkg/lock-frontend | awk '{print $2}' | tail -n1)
+sudo dpkg --configure -a
 apt-get update
 apt-get install -y \
     curl \
@@ -21,11 +23,7 @@ cd /home/github/ || exit
 mkdir work
 
 # Reads required environment variables from bootstrap_vars file
-for ff in $(cat /vagrant/bootstrap_vars) 
-do 
-   IFS="=" read -ra varr <<< "$ff"
-   export ${varr[0]}=${varr[1]}
-done
+source /vagrant/bootstrap_vars_linux.sh
 
 curl -Ls https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz | tar xz \
     && sudo ./bin/installdependencies.sh

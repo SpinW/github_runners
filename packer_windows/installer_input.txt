@@ -1,0 +1,6 @@
+destinationFolder="C:\Program Files\MATLAB"
+fileInstallationKey=xxxxx
+agreeToLicense=yes
+outputFile=C:\tmp\mathworks_vagrant.log
+licensePath=A:\network.lic
+product.MATLAB
