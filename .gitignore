@@ -5,3 +5,5 @@
 .vagrant/
 boxes/
 modify_boxes/
+
+credentials

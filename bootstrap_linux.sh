@@ -46,6 +46,8 @@ echo 'export RUNNER_TOKEN=$(echo $payload | jq .token --raw-output)' >> /root/te
 echo 'sudo -u github /home/github/config.sh remove --unattended --token ${RUNNER_TOKEN}' >> /root/teardown.sh
 chmod 700 /root/teardown.sh
 
+chown -R github:github /home/github/
+
 su github -c "./config.sh \
     --name $( cat /dev/urandom | tr -cd 'a-f0-9' | head -c 16 ) \
     --token ${RUNNER_TOKEN} \
@@ -54,8 +56,6 @@ su github -c "./config.sh \
     --labels linux_matlab \
     --unattended \
     --replace"
-
-chown -R github:github /home/github/
 
 ./svc.sh install github
 ./svc.sh start
