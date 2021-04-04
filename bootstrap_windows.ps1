@@ -24,12 +24,15 @@ $RUNNER_TOKEN = ($payload.Content | ConvertFrom-Json).token
 # Write teardown script
 cd c:/users/vagrant
 echo 'cd c:/github' > teardown.ps1
-echo 'Get-Content c:/vagrant/bootstrap_vars | Foreach-Object{ $var = $_.Split("="); New-Variable -Name $var[0] -Value $var[1] }' >> teardown.ps1
+echo 'Get-Content c:/vagrant/bootstrap_vars_windows | Foreach-Object{' >> teardown.ps1
+echo '   $var = $_.Split("=").Trim()' >> teardown.ps1
+echo '   New-Variable -Name $var[0] -Value $var[1] }' >> teardown.ps1
 echo '$removal_url="https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPOSITORY/actions/runners/remove-token"' >> teardown.ps1
 echo '$headers = @{"Authorization" = "token $GITHUB_PAT"}' >> teardown.ps1
 echo '$payload = Invoke-WebRequest -Method POST -Uri $removal_url -Headers $headers' >> teardown.ps1
 echo '$RUNNER_TOKEN= ($payload.Content | ConvertFrom-Json).token' >> teardown.ps1
-echo './config.cmd remove --unattended --token ${RUNNER_TOKEN}' >> teardown.ps1
+echo './config.cmd remove --unattended --token $RUNNER_TOKEN' >> teardown.ps1
+type teardown.ps1
 cd c:/github
 
 # Register runner and run it

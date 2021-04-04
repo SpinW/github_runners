@@ -15,7 +15,9 @@
         "./scripts/disable-winrm.ps1",
         "./scripts/enable-winrm.ps1",
         "./scripts/microsoft-updates.bat",
-        "./scripts/win-updates.ps1"
+        "./scripts/win-updates.ps1",
+        "{{user `matlab_install_input`}}",
+        "{{user `matlab_license_file`}}"
       ],
       "headless": true,
       "iso_checksum": "{{user `iso_checksum`}}",
@@ -25,15 +27,19 @@
       "qemuargs": [
         [
           "-drive",
-          "file=windows_10-qemu/{{ .Name }},if=virtio,cache=writeback,discard=ignore,format=qcow2,index=1"
+          "file=windows_10-qemu/{{ .Name }},if=virtio,cache=writeback,discard=ignore,format=qcow2,index=0"
         ],
         [
           "-drive",
-          "file={{ user `iso_url` }},media=cdrom,index=2"
+          "file={{ user `iso_url` }},media=cdrom,index=1"
         ],
         [
           "-drive",
           "file={{ user `virtio_win_iso` }},media=cdrom,index=3"
+        ],
+        [
+          "-drive",
+          "file={{ user `matlab_iso` }},media=cdrom,index=2"
         ]
       ],
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
@@ -127,8 +133,8 @@
         "./scripts/enable-winrm.ps1",
         "./scripts/microsoft-updates.bat",
         "./scripts/win-updates.ps1",
-		"{{user `matlab_install_input`}}",
-		"{{user `matlab_license_file`}}"
+        "{{user `matlab_install_input`}}",
+        "{{user `matlab_license_file`}}"
       ],
       "guest_additions_mode": "disable",
       "guest_os_type": "Windows10_64",
@@ -138,9 +144,9 @@
       "memory": "{{user `memory`}}",
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
       "type": "virtualbox-iso",
-	  "vboxmanage": [
-		["storageattach", "{{.Name}}", "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", "{{user `matlab_iso`}}"]
-	  ],
+      "vboxmanage": [
+        ["storageattach", "{{.Name}}", "--storagectl", "IDE Controller", "--port", "1", "--device", "0", "--type", "dvddrive", "--medium", "{{user `matlab_iso`}}"]
+      ],
       "vm_name": "{{user `vm_name`}}",
       "winrm_password": "vagrant",
       "winrm_timeout": "{{user `winrm_timeout`}}",
@@ -228,7 +234,8 @@
     },
     {
       "scripts": [
-        "./scripts/install_matlab.ps1"
+        "./scripts/install_matlab.ps1",
+        "./scripts/spinwci.ps1"
       ],
       "type": "powershell"
     },
@@ -248,18 +255,18 @@
   ],
   "variables": {
     "autounattend": "./answer_files/10/Autounattend.xml",
-    "disk_size": "61440",
+    "disk_size": "20480",
     "disk_type_id": "1",
-    "memory": "2048",
+    "memory": "4096",
     "headless": "false",
     "iso_checksum": "sha256:f1a4f2176259167cd2c8bf83f3f5a4039753b6cc28c35ac624da95a36e9620fc",
     "iso_url": "https://software-download.microsoft.com/download/pr/19041.264.200511-0456.vb_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
     "restart_timeout": "5m",
     "vhv_enable": "false",
     "virtio_win_iso": "./virtio-win.iso",
-	"matlab_iso": "./matlab.iso",
-	"matlab_install_input": "./installer_input.txt",
-	"matlab_license_file": "./network.lic",
+    "matlab_iso": "./matlab.iso",
+    "matlab_install_input": "./installer_input.txt",
+    "matlab_license_file": "./network.lic",
     "vm_name": "windows_10",
     "winrm_timeout": "6h",
     "vmx_version": "14"

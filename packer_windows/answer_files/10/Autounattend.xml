@@ -15,43 +15,43 @@
             -->
             <DriverPaths>
                 <PathAndCredentials wcm:action="add" wcm:keyValue="2">
-                    <Path>E:\viostor\w10\amd64</Path>
+                    <Path>F:\viostor\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="3">
-                    <Path>E:\NetKVM\w10\amd64</Path>
+                    <Path>F:\NetKVM\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="4">
-                    <Path>E:\Balloon\w10\amd64</Path>
+                    <Path>F:\Balloon\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="5">
-                    <Path>E:\pvpanic\w10\amd64</Path>
+                    <Path>F:\pvpanic\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="6">
-                    <Path>E:\qemupciserial\w10\amd64</Path>
+                    <Path>F:\qemupciserial\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="7">
-                    <Path>E:\qxldod\w10\amd64</Path>
+                    <Path>F:\qxldod\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="8">
-                    <Path>E:\vioinput\w10\amd64</Path>
+                    <Path>F:\vioinput\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="9">
-                    <Path>E:\viorng\w10\amd64</Path>
+                    <Path>F:\viorng\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="10">
-                    <Path>E:\vioscsi\w10\amd64</Path>
+                    <Path>F:\vioscsi\w10\amd64</Path>
                 </PathAndCredentials>
 
                 <PathAndCredentials wcm:action="add" wcm:keyValue="11">
-                    <Path>E:\vioserial\w10\amd64</Path>
+                    <Path>F:\vioserial\w10\amd64</Path>
                 </PathAndCredentials>
             </DriverPaths>
         </component>
