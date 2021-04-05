@@ -1,5 +1,8 @@
 /bootstrap_vars
 /bootstrap_vars.sh
+/bootstrap_vars_windows
+/bootstrap_vars_linux.sh
+/bootstrap_vars_macos.sh
 
 .idea/
 .vagrant/

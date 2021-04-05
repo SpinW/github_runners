@@ -1,0 +1,26 @@
+require 'vagrant-openstack-provider'
+
+Vagrant.configure("2") do |config|
+    config.ssh.username = ENV['OS_USERNAME']
+    config.ssh.private_key_path = "tmpkey"
+    config.vm.define "linux" do |linux|
+        linux.vm.provider "openstack" do |os|
+            os.openstack_auth_url = "https://openstack.nubes.rl.ac.uk:5000/v3"
+            os.identity_api_version = "3"
+            os.project_name = "SpinW_CI"
+            os.project_domain_name = "default"
+            os.user_domain_name = "stfc"
+            os.username = ENV['OS_USERNAME']
+            os.password = ENV['OS_PASSWORD']
+            os.region = "RegionOne"
+            os.flavor = "m3.small"
+            os.image = "ubuntu-bionic-18.04-nogui"
+            os.availability_zone = "ceph"
+            os.keypair_name = "temp_install_key"
+            os.server_name = "runner_installation"
+        end
+        # NFS folder syncing doesn't work on qemu and rsync can be slow
+        linux.vm.synced_folder ".", "/vagrant", disabled: true
+        linux.vm.provision :shell, path: 'bootstrap.sh'
+    end
+end
