@@ -2,6 +2,8 @@ from flask import Flask, request
 import json
 import subprocess
 import os
+import re
+import shutil
 
 app = Flask(__name__)
 
@@ -36,14 +38,29 @@ def ssl_decode(value):
     return ssl.stdout.decode()
 
 
-def write_vars(owner, repo, PAT, defaults):
-    filename = defaults['filename']
+def write_vars(owner, repo, PAT, defaults, wd=''):
+    filename = f'{wd}/{defaults["filename"]}'
     with open(filename, 'w') as fid:
         fid.write(f'{defaults["export_cmd"]} GITHUB_RUNNER_VERSION={defaults["runner_version"]}\n')
         fid.write(f'{defaults["export_cmd"]} RUNNER_WORKDIR={defaults["gh_action_work_dir"]}\n')
         fid.write(f'{defaults["export_cmd"]} GITHUB_OWNER={owner}\n')
         fid.write(f'{defaults["export_cmd"]} GITHUB_REPOSITORY={repo}\n')
         fid.write(f'{defaults["export_cmd"]} GITHUB_PAT={PAT}\n')
+        fid.write(f'{defaults["export_cmd"]} GITHUB_ID="{wd}"\n')
+
+
+def create_working_dir(dirname):
+    os.makedirs(dirname, exist_ok=True)
+    # Search/replace so image name has ID in it
+    fout = open(dirname + '/Vagrantfile', 'w')
+    with open('Vagrantfile.idtemplate', 'r') as f_in:
+        for line in f_in:
+            fout.write(line.replace('_IDSTR', f'_{dirname}'))
+    fout.close()
+    shutil.copy('bootstrap_linux.sh', dirname)
+    shutil.copy('bootstrap_macos.sh', dirname)
+    shutil.copy('bootstrap_windows.ps1', dirname)
+    print(f'Working dir {dirname} created', flush=True)
 
 
 @app.route('/', methods=['POST'])
@@ -53,31 +70,47 @@ def index():
         req_data = github_request['data']
         repo_data = github_request['repository']
         owner, repo = repo_data.split('/')
-        if req_data.get('ghcontrol', False):
-            if req_data.get('server', False):
-                server = req_data["server"].split('-')[0]
-                if req_data['ghcontrol'] == 'create':
-                    PAT = ssl_decode(req_data.get('PAT', False))
-                    if not PAT:
-                        return '{"success":"false", "info":"PAT not supplied"}'
-                    print(f'Bringing up server: {req_data["server"]}')
-                    write_vars(owner, repo, PAT, defaults[server])
-                    try:
-                        subprocess.run(['vagrant', 'up', server])
-                    finally:
-                        pass
-                    #    os.remove(defaults[server]['filename'])
-                elif req_data['ghcontrol'] == 'destroy':
-                    print(f'Destroying server: {req_data["server"]}')
-                    subprocess.run(['vagrant', 'destroy', server, '-f'])
-                return '{"success":"true", "info":"server actions complete"}'
-            else:
-                info ='server data was not supplied'
-                print(info + '. I am not doing anything')
-        else:
+        if not req_data.get('ghcontrol', False):
             info = 'ghcontrol data was not supplied'
-            print(info + '. I am not doing anything')
-        return '{"success":"false", "info":"' + info + '"}'
+            print(info + '. I am not doing anything', flush=True)
+            return '{"success":"false", "info":"' + info + '"}'
+        if not req_data.get('servers', False):
+            info ='server data was not supplied'
+            print(info + '. I am not doing anything', flush=True)
+            return '{"success":"false", "info":"' + info + '"}'
+        ID = req_data.get('ID', '')
+        wd = ID if ID else None
+        if ID and req_data['ghcontrol'] == 'create':
+            # Create a working directory for each job
+            create_working_dir(ID)
+        processes = {}
+        for server in re.sub(r'[\[\]\s]', '', req_data['servers']).split(','):
+            server_type = server.split('-')[0]
+            server_name = f'{server_type}_{ID}'
+            if req_data['ghcontrol'] == 'create':
+                PAT = ssl_decode(req_data.get('PAT', False))
+                if not PAT:
+                    return '{"success":"false", "info":"PAT not supplied"}'
+                print(f'Bringing up server: {server_name}', flush=True)
+                write_vars(owner, repo, PAT, defaults[server_type], ID)
+                processes[server_name] = subprocess.Popen(['vagrant', 'up', server_name], cwd=wd)
+            elif req_data['ghcontrol'] == 'destroy':
+                print(f'Destroying server: {server_name}', flush=True)
+                processes[server_name] = subprocess.Popen(['vagrant', 'destroy', server_name, '-f'], cwd=wd)
+        retval = {}
+        for proc in processes:
+            retval[proc] = processes[proc].wait()
+            print(f'Done {req_data["ghcontrol"]} server {proc}', flush=True)
+        if all([retval[rv]==0 for rv in retval]):
+            if ID and req_data['ghcontrol'] == 'destroy':
+                shutil.rmtree(ID)
+            print(f'Success doing {req_data["ghcontrol"]} on all servers', flush=True)
+            return '{"success":"true", "info":"server actions complete"}'
+        else:
+            for proc in [rv for rv in retval if retval[rv]!=0]:
+                print(f'Failed: An error occured in vagrant command when: ' 
+                      f'{req_data["ghcontrol"]} server {proc}', flush=True)
+            return '{"success":"false", "info":"error occured in vagrant command"}'
 
 
 if __name__ == "__main__":   

@@ -44,6 +44,13 @@ echo 'export RUNNER_TOKEN=$(echo $payload | jq .token --raw-output)' >> /root/te
 echo 'sudo -u github /home/github/config.sh remove --unattended --token ${RUNNER_TOKEN}' >> /root/teardown.sh
 chmod 700 /root/teardown.sh
 
+if [[ $GITHUB_ID == "" ]]
+then
+    LABEL=linux_matlab
+else
+    LABEL=linux_$GITHUB_ID
+fi
+
 chown -R github:github /home/github/
 
 su github -c "./config.sh \
@@ -51,7 +58,7 @@ su github -c "./config.sh \
     --token ${RUNNER_TOKEN} \
     --url https://github.com/${GITHUB_OWNER}/${GITHUB_REPOSITORY} \
     --work ${RUNNER_WORKDIR} \
-    --labels linux_matlab \
+    --labels ${LABEL} \
     --unattended \
     --replace"
 
