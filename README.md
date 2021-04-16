@@ -62,6 +62,17 @@ relay connect http://127.0.0.1:4000
 ```
 python3 receiveData.py >& logfile
 ```
+6. Copy the [`self_hosted.yml`](.github/workflows/self_hosted.yml) to the repository you
+   want to run the Actions, and modify it to run your tests.
+7. Add the URL of the webhook (either relay or the URL of the Flask server if it is not
+   behind a firewall) to the secrets of this repositroy as `WEBHOOK_URL`.
+8. Generate an [Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+   with either the `repo` scope (private _or_ public repositories) or just `public_repo`.
+   Put this token as a secret `PERSONAL_TOKEN` in the repo the action will run in.
+9. Create a secret called `OPENSSL_PW` with a password for the SSL encryption of the access token.
+   If you're using an `https` encrypted webhook, you can comment out the encryption
+   in [`self_hosted.yml`](.github/workflows/self_hosted.yml) and decryption in 
+   [receiveData.py](receiveData.py) and not use this encryption.
 
 These instructions assume that you've created the VM instances already.
 If running with Vagrant boxes on the same system, this means using `vagrant box add` etc.
